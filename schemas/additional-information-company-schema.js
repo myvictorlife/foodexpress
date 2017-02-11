@@ -4,12 +4,6 @@ module.exports = {
   "title": "Root schema.",
   "description": "An explanation about the purpose of this instance.",
   "properties": {
-    "_id": {
-      "type": "string",
-      "minLength": 1,
-      "title": "_id schema.",
-      "description": "An explanation about the purpose of this instance."
-    },
     "companyId": {
       "type": "string",
       "minLength": 1,
@@ -217,7 +211,6 @@ module.exports = {
     }
   },
   "required": [
-    "_id",
     "companyId",
     "foodOrder",
     "address",
