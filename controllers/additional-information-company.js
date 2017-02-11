@@ -13,7 +13,7 @@ AdditionalInformationController.prototype = (function() {
 
 	return {
 		findByID: function findByID(request, reply) {
-			var id = request.params.companyId
+			var id = request.params.id
 			if (!ObjectId.isValid(id)) {
 				reply({
 					status: false,
@@ -71,7 +71,7 @@ AdditionalInformationController.prototype = (function() {
 						var collection = db.collection('AdditionalInformationCompany');
 
 						collection.findOne({
-							companyId: request.params.id
+							companyId: request.params.companyId
 						}, function(err, result) {
 							if (err) {
 								console.log(err);
