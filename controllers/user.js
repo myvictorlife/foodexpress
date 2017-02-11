@@ -13,7 +13,7 @@ UserController.prototype = (function() {
 
 	return {
 		findByID: function findByID(request, reply) {
-
+			console.log("passei aqui")
 			User.findOne({_id: ObjectId(request.params.id)}, function(err, user) {
 				if (err) {
 					reply(err)
@@ -123,10 +123,9 @@ UserController.prototype = (function() {
 		changePassword: function changePassword(request, reply) {
 
 			email = request.payload.email
-			oldPassword = request.payload.old_password
-			newPassword = request.payload.new_password
-			checkPassword = request.payload.check_password
-
+			oldPassword = request.payload.oldPassword	
+			newPassword = request.payload.newPassword
+			checkPassword = request.payload.repeatPassword
 			if (newPassword === checkPassword) {
 				//user.updated_at = new Date()
 
@@ -137,6 +136,8 @@ UserController.prototype = (function() {
 						reply(err)
 					} else {
 						if (user) {
+							console.log(user.password)
+							console.log(oldPassword)
 							if (user.password === crypt.encrypt(oldPassword)) {
 								User.findOneAndUpdate({
 									email: user.email
@@ -146,7 +147,7 @@ UserController.prototype = (function() {
 									} else {
 										reply({
 											status: true,
-											message: 'Usuário editado com sucesso.'
+											message: 'Senha editada com sucesso.'
 										})
 									}
 								});

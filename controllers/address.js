@@ -20,7 +20,7 @@ AddressController.prototype = (function() {
 				number: address.number,
 				neighborhood: address.neighborhood,
 				city: address.city,
-				zip_code: address.zip_code,
+				cep: address.cep,
 				updated_at: null
 			});
 
@@ -44,9 +44,10 @@ AddressController.prototype = (function() {
 			address.updated_at = new Date()
 			address.userID = ObjectID(address.userID)
 
-			var id = address.id
-			delete address.id
+			var id = address._id
+			delete address._id
 
+			console.log(address)
 			Address.findOneAndUpdate({
 				_id: ObjectID(id)
 			}, address, function(err, address) {
@@ -76,6 +77,21 @@ AddressController.prototype = (function() {
 				}
 			})
 
+		},
+		delete: function(request, reply) {
+			Address.remove({_id: ObjectID(request.params.id)}, function(err, address){
+				if(err){
+					reply({
+						status: false,
+						message: 'Não foi possível remover o endereço. Tente mais tarde!'
+					})	
+				}else{
+					reply({
+						status: true,
+						message: 'Endereço removido com sucesso.'
+					})
+				}
+			})
 		}
 	}
 })();

@@ -10,7 +10,7 @@ var addressSchema = new Schema({
   number: String,
   neighborhood: String,
   city: String,
-  zip_code: Number,
+  cep: Number,
   created_at:  { type: Date, default: Date.now },
   updated_at: Date
 });

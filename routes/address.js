@@ -28,19 +28,17 @@ module.exports = [{
         path: '/address',
         config: {
             description: 'Editando endereço na base',
-            auth: 'token',
-            validate: {
-                payload: { 
-                           id: Joi.string().required(),
-                           userID: Joi.string().required(),
-                           street: Joi.string().required(),
-                           number: Joi.string().required(),
-                           neighborhood: Joi.string().required(),
-                           city: Joi.string().required(),
-                           zip_code: Joi.number().required(),
-                         }
-            },
+            auth: 'token',  
             handler: addressController.update
         }
-}];
+    },{
+        method: 'DELETE',
+        path: '/address/{id}',
+        config:{
+          description: 'Deletar endereço na base por id',
+          auth: 'token'
+        },
+        handler: addressController.delete
+    }
+];
     
