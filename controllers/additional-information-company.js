@@ -13,7 +13,7 @@ AdditionalInformationController.prototype = (function() {
 
 	return {
 		findByID: function findByID(request, reply) {
-			var id = request.params.id
+			var id = request.params.companyId
 			if (!ObjectId.isValid(id)) {
 				reply({
 					status: false,
