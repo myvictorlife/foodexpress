@@ -56,9 +56,15 @@ internals.implementation = function (server, options) {
 
       jwt.verify(token, settings.key, settings.verifyOptions || {}, function(err, decoded) {
         if(err && err.message === 'jwt expired') {
-          return reply(Boom.unauthorized('O token temporário está expirado. Deve fazer o login novamente.', 'Bearer'));
+          return reply({
+                        status: false, 
+                        message: 'O token temporário está expirado. Deve refazer o login novamente.'
+                      });
         } else if (err) {
-          return reply(Boom.unauthorized('O token temporario esta invalido deve fazer o login novamente', 'Bearer'));
+          return reply({
+                        status: false, 
+                        message: 'O token temporário está expirado. Deve refazer o login novamente.'
+                      });
         }
 
         if (!settings.validateFunc) {

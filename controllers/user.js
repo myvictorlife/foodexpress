@@ -1,12 +1,42 @@
-var mongoose = require('mongoose');
+	var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = require('mongodb').ObjectID
 var User = require('../models/user')
 var Address = require('../models/address')
 var randomstring = require("randomstring")
+var validator = require('validator')
 const crypt = require('../config/cryptography');
 const serverEndpoints = require('../config/server-endpoints')
 var SendEmail = require('../config/sendemail')
+const ValidateSchema = require('./validate-schema')
+
+
+var validateFields = function(user){
+	
+	
+	if(validator.isEmpty(user.name.trim())){
+		return  {    
+				status: false,
+				message: 'Nome deve ser inserido.'
+			}
+	}
+	if(!validator.isEmail(user.email)){
+		return {    
+				status: false,
+				message: 'Email incorreto.'
+			}
+	}
+
+	
+	var regex = /^\D?(\d{2})\D?\D?(\d{5})\D?(\d{4})$/
+	if(user.phone.match( regex ) == null){
+		return {    
+				status: false,
+				message: 'Número telefonico inválido. Somente número com 11 valores ou no formato (xx) xxxxx-xxxx'
+			}	
+	}
+	return {status: true}
+}
 
 function UserController() {};
 UserController.prototype = (function() {
@@ -75,49 +105,82 @@ UserController.prototype = (function() {
 			})
 		},
 		insert: function insert(request, reply) {
-			user = request.payload
+			var validate = ValidateSchema(request.payload, 'User')
+			if (typeof validate == 'boolean' && validate) {
 
-			var newPassword = randomstring.generate(5)
-			var userSchema = new User({
-				name: user.name,
-				email: user.email,
-				password: newPassword,
-				phone: user.phone,
-				updated_at: null
-			});
+				user = request.payload
+				var json = validateFields(user)
+				if(json.status){
+					var newPassword = randomstring.generate(5)
+					var userSchema = new User({
+						name: user.name,
+						email: user.email,
+						password: newPassword,
+						phone: user.phone,
+						updated_at: null
+					});
 
-			userSchema.encrypt(function(err, password) {});
+					userSchema.encrypt(function(err, password) {});
 
-			userSchema.save(function(err, result) {
-				if (err) {
-					reply({
-						status: false,
-						message: err.errmsg
+					userSchema.save(function(err, result) {
+						if (err) {
+							reply({
+								status: false,
+								message: err.errmsg
+							})
+						} else {
+							var userMessage = 'Seja bem vindo '+user.name+'! A senha será enviada para o seu email.'
+							SendEmail.sendEmail(user.name, newPassword, user.email, userMessage, reply)
+						}
+
 					})
-				} else {
-					var userMessage = 'Seja bem vindo '+user.name+'! A senha será enviada para o seu email.'
-					SendEmail.sendEmail(user.name, newPassword, user.email, userMessage, reply)
+				}else{
+					reply({
+							status: json.status,
+							message: json.message
+						})
 				}
 
-			})
+			}else{
+				reply(validate)
+			}
+			
+
 		},
 		update: function update(request, reply) {
 
-			user = request.payload
-			user.updated_at = new Date()
+			var validate = ValidateSchema(request.payload, 'User')
+			if (typeof validate == 'boolean' && validate) {
 
-			User.findOneAndUpdate({
-				email: user.email
-			}, user, function(err, user) {
-				if (err) {
-					reply(err)
-				} else {
+				user = request.payload
+				var json = validateFields(user)
+				if(json.status){
+
+					user = request.payload
+					user.updated_at = new Date()
+
+					User.findOneAndUpdate({
+						email: user.email
+					}, user, function(err, user) {
+						if (err) {
+							reply(err)
+						} else {
+							reply({
+								status: true,
+								message: 'Usuário editado com sucesso.'
+							})
+						}
+					});
+				}else{
 					reply({
-						status: true,
-						message: 'Usuário editado com sucesso.'
-					})
+							status: json.status,
+							message: json.message
+						})
 				}
-			});
+
+			}else{
+				reply(validate)
+			}
 
 		},
 		changePassword: function changePassword(request, reply) {

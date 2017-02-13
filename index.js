@@ -20,12 +20,12 @@ var hapiAuthJwt = require('./middlewares/jwt-verify')
 const config = {};
 const server = new Hapi.Server(config);
 
-const port = 9000;
-//const host = 'localhost';
+const port = 8080;
+const host = 'localhost';
 
 server.connection({
   port: port,
-//  host: host,
+  host: host,
   routes: {
     cors: true
   }

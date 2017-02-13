@@ -9,8 +9,9 @@ var addressSchema = new Schema({
   street: String,
   number: String,
   neighborhood: String,
+  complement: String,
   city: String,
-  cep: Number,
+  cep: String,
   created_at:  { type: Date, default: Date.now },
   updated_at: Date
 });
