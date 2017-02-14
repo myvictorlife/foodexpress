@@ -4,6 +4,7 @@ const ValidateSchema = require('./validate-schema')
 var validator = require('validator');
 
 var User = require('../models/user')
+var randomstring = require("randomstring")
 
 var jwt    = require('jsonwebtoken'), // used to create, sign, and verify tokens
     moment = require('moment'),
@@ -35,6 +36,36 @@ var validateFields = function(email, password){
 	}
 
 	return {status: true}
+}
+
+var saveUser = function (user, reply){
+	var newPassword = randomstring.generate(10)
+	console.log(user)
+	var userSchema = new User({
+		name: user.name,
+		email: user.email,
+		password: newPassword,
+		phone: user.phone,
+		updated_at: null
+	});
+	console.log(userSchema)
+	userSchema.encrypt(function(err, password) {});
+
+	userSchema.save(function(err, result) {
+		
+		if (err) {
+			reply({
+				status: false,
+				message: err.errmsg
+			})
+		} else {
+
+			var token = jwt.sign(result, middlwareJwt.privateKey, {expiresIn: '24h'})
+            reply({token:token, "message":"Login efetuado com sucesso", "success":true})
+	
+		}
+
+	})
 }
 
 function AuthenticateController(){};
@@ -81,6 +112,24 @@ AuthenticateController.prototype = (function(){
 			
 			
 
+		},
+		authenticateByFacebook: function authenticateByFacebook(request, reply) {
+
+			var payload = request.payload
+			
+		    User.findOne({email: payload.email}, function(err, user) {
+				if (err) {
+					reply(err)
+				} else if (user) {					
+	                // Se não tiver nenhum erro, então criamos o Token para ele
+	                var token = jwt.sign(user, middlwareJwt.privateKey, {expiresIn: '24h'})
+                    reply({token:token, "message":"Login efetuado com sucesso", "success":true})
+				} else {
+					saveUser(payload, reply)
+					//reply({'status': true, 'message':'Nenhum usuário encontrado'});
+				}
+			})
+		
 		}
 	}
 })();

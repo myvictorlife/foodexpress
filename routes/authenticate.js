@@ -16,4 +16,11 @@ module.exports = [{
               },
             handler: authenticateController.authenticate
           }
+      },{
+          method: 'POST',
+          path: '/loginfacebook',
+          config: {
+            description: 'Autentica um usuário na base',
+            handler: authenticateController.authenticateByFacebook
+          }
       }];
