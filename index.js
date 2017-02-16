@@ -11,6 +11,7 @@ const Address = require('./routes/address')
 const Email = require('./routes/email')
 const Company = require('./routes/company')
 const FoodOrder = require('./routes/food-order')
+const Relationship = require('./routes/relationship')
 
 const AdditionalInformationCompany = require('./routes/additional-information-company')
 
@@ -73,6 +74,7 @@ server.register([Vision, Inert, loutRegister, hapiAuthJwt], function(err) {
     server.route(Company)
     server.route(AdditionalInformationCompany)
     server.route(FoodOrder)
+    server.route(Relationship)
     
     server.start(function () {
         console.log('Server running at:', server.info.uri);

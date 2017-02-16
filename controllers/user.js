@@ -10,7 +10,10 @@ const serverEndpoints = require('../config/server-endpoints')
 var SendEmail = require('../config/sendemail')
 const ValidateSchema = require('./validate-schema')
 
-
+var jwt    = require('jsonwebtoken'), // used to create, sign, and verify tokens
+    moment = require('moment'),
+    middlwareJwt = require('../middlewares/middleware-jwt');
+    
 var validateFields = function(user){
 	
 	
@@ -162,13 +165,13 @@ UserController.prototype = (function() {
 					User.findOneAndUpdate({
 						email: user.email
 					}, user, function(err, user) {
+						user.name = request.payload.name
+						user.phone = request.payload.phone
 						if (err) {
 							reply(err)
 						} else {
-							reply({
-								status: true,
-								message: 'Usuário editado com sucesso.'
-							})
+							var token = jwt.sign(user, middlwareJwt.privateKey, {expiresIn: '24h'})
+		                    reply({token:token, 'message':'Usuário editado com sucesso.', status:true})
 						}
 					});
 				}else{
