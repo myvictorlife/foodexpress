@@ -72,8 +72,8 @@ function AuthenticateController(){};
 AuthenticateController.prototype = (function(){
 
 	return {
-		authenticate: function findByID(request, reply) {
-
+		authenticate: function authenticate(request, reply) {
+			
 			var validate = ValidateSchema(request.payload, 'Authenticate')
 			if (typeof validate == 'boolean' && validate) {
 

@@ -6,7 +6,7 @@ var transporte = nodemailer.createTransport({
 	service: 'Gmail', // Como mencionei, vamos usar o Gmail
 	auth: {
 		user: 'suacomidaonline@gmail.com', // Basta dizer qual o nosso usuário
-		pass: 'fxj*()1010' // e a senha da nossa conta
+		pass: 'fxj*()20200' // e a senha da nossa conta
 	}
 });
 
@@ -28,6 +28,7 @@ SendEmail.prototype = (function() {
 			};
 			// Pronto, tudo em mãos, basta informar para o transporte
 			// que desejamos enviar este e-mail
+			console.log(email)
 			transporte.sendMail(email, function(err, info) {
 				if (err)
 					throw err; // Oops, algo de errado aconteceu.

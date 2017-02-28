@@ -63,4 +63,3 @@ module.exports = [{
             handler: userController.update
         }
 }];
-    

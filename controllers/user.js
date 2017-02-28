@@ -13,30 +13,30 @@ const ValidateSchema = require('./validate-schema')
 var jwt    = require('jsonwebtoken'), // used to create, sign, and verify tokens
     moment = require('moment'),
     middlwareJwt = require('../middlewares/middleware-jwt');
-    
+
 var validateFields = function(user){
-	
-	
+
+
 	if(validator.isEmpty(user.name.trim())){
-		return  {    
+		return  {
 				status: false,
 				message: 'Nome deve ser inserido.'
 			}
 	}
 	if(!validator.isEmail(user.email)){
-		return {    
+		return {
 				status: false,
 				message: 'Email incorreto.'
 			}
 	}
 
-	
-	var regex = /^\D?(\d{2})\D?\D?(\d{5})\D?(\d{4})$/
+
+	var regex = /^\D?(\d{3})\D?\D?(\d{5})\D?(\d{4})$/
 	if(user.phone.match( regex ) == null){
-		return {    
+		return {
 				status: false,
 				message: 'Número telefonico inválido. Somente número com 11 valores ou no formato (xx) xxxxx-xxxx'
-			}	
+			}
 	}
 	return {status: true}
 }
@@ -115,6 +115,7 @@ UserController.prototype = (function() {
 				var json = validateFields(user)
 				if(json.status){
 					var newPassword = randomstring.generate(5)
+					console.log(newPassword)
 					var userSchema = new User({
 						name: user.name,
 						email: user.email,
@@ -147,7 +148,7 @@ UserController.prototype = (function() {
 			}else{
 				reply(validate)
 			}
-			
+
 
 		},
 		update: function update(request, reply) {
@@ -189,7 +190,7 @@ UserController.prototype = (function() {
 		changePassword: function changePassword(request, reply) {
 
 			email = request.payload.email
-			oldPassword = request.payload.oldPassword	
+			oldPassword = request.payload.oldPassword
 			newPassword = request.payload.newPassword
 			checkPassword = request.payload.repeatPassword
 			if (newPassword === checkPassword) {
