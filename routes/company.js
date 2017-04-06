@@ -1,11 +1,6 @@
 'use strict';
 
-var mongodb = require('mongodb');
-var MongoClient = mongodb.MongoClient;
-
 var companyController = require('../controllers/company');
-
-const serverEndpoints = require('../config/server-endpoints')
 
 module.exports = [{
         method: 'POST',
@@ -20,7 +15,7 @@ module.exports = [{
         path: '/company/{id}',
         config:{
           description: 'Buscando empresa na base por id',
-          auth: 'token'
+          //auth: 'token'
         },
         handler: companyController.findByID
     },{
@@ -36,7 +31,7 @@ module.exports = [{
         path: '/company',
         config: {
             description: 'Editando usuário na base',
-            auth: 'token'
+            //auth: 'token'
             },
             handler: companyController.update
 }];

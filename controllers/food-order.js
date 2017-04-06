@@ -24,6 +24,7 @@ var validate = function(userID, companyID) {
 			id: 'Id do usuário é inválido.'
 		})
 	}
+
 	if (!ObjectId.isValid(companyID)) {
 		return ({
 			status: false,
@@ -65,6 +66,52 @@ FoodOrderController.prototype = (function() {
 							}
 							db.close()
 				    });
+
+					}
+				});
+			}
+		},
+		findByCompanyId: function findByCompanyId(request, reply) {
+			var id = request.params.id
+			console.log(id)
+			if (!ObjectId.isValid(id)) {
+				reply({
+					status: false,
+					id: 'ID inserio é inválido.'
+				})
+			} else {
+				MongoClient.connect(serverEndpoints.URL_MONGO, function(err, db) {
+					if (err) {
+						reply({
+							status: false,
+							message: 'Erro ao tentar buscar os pedidos.'
+						});
+					} else {
+						var collection = db.collection('FoodOrder');
+
+						collection.aggregate([{
+					        $match: {
+					                    companyID: id
+					                }
+					    },{
+				            $lookup: {
+				                    from: "users",
+				                    localField: "userID",
+				                    foreignField: "_id",
+				                    as: "user"
+				            }
+					    }], function(err, user) {
+					            if (err) {
+					                    reply(err)
+					            } else if (user.length > 0) {
+					                    reply(user);
+					            } else {
+					                    reply({
+					                            'status': true,
+					                            'message': 'Nenhum usuário encontrado'
+					                    });
+					            }
+					    })
 
 					}
 				});

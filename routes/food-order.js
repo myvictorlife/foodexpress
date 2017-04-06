@@ -29,5 +29,14 @@ module.exports = [{
             auth: 'token'
             },
             handler: FoodOrderControllerController.update
-}];
+    },{
+        method: 'GET',
+        path: '/food-order-company/{id}',
+        config: {
+            description: 'Buscando pedido da empesa na base por id',
+            //auth: 'token'
+        },
+        handler: FoodOrderControllerController.findByCompanyId
+    }
+];
     

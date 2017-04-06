@@ -88,6 +88,8 @@ AuthenticateController.prototype = (function(){
 						if (err) {
 							reply(err)
 						} else if (user) {
+
+							console.log(crypt.decrypt(user.password))
 							if(!verifyPassword(user.password, password)){
 				              reply({'status': false, 'message':'Senha inválida'});
 				            }else{

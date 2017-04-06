@@ -12,7 +12,7 @@ module.exports = [{
         path: '/additionalInformationCompany',
         config: {
             description: 'Inserindo informações adicionais da empresa na base',
-            auth: 'token',
+            //auth: 'token',
             handler: AdditionalInformationController.insert
         }
     },{
@@ -20,7 +20,7 @@ module.exports = [{
         path: '/additionalInformationCompany/{id}',
         config:{
           description: 'Buscando informações adicionais da empresa na base por id',
-          auth: 'token'
+          //auth: 'token'
         },
         handler: AdditionalInformationController.findByID
     },{
@@ -28,7 +28,7 @@ module.exports = [{
         path: '/additionalInformationCompany',
         config: {
             description: 'Editando informações adicionais da empresa na base',
-            auth: 'token'
+            //auth: 'token'
             },
             handler: AdditionalInformationController.update
 }];

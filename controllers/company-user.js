@@ -2,14 +2,16 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = require('mongodb').ObjectID
 const serverEndpoints = require('../config/server-endpoints')
-var Company = require('../models/company')
+var CompanyUser = require('../models/company-user')
 
-function CompanyController() {};
-CompanyController.prototype = (function() {
+function CompanyUserController() {};
+CompanyUserController.prototype = (function() {
 
 	return {
 		findByID: function findByID(request, reply) {
-			Company.findOne({_id: ObjectId(request.params.id)}, function(err, company) {
+
+			CompanyUser.findOne({_id: ObjectId(request.params.userId),
+								companyID: ObjectId(request.params.companyId)}, function(err, company) {
 				if (err) {
 					reply(err)
 				} else if (company) {
@@ -24,13 +26,14 @@ CompanyController.prototype = (function() {
 		},
 		find: function find(request, reply) {
 
-			Company.find({}, function(err, result) {
+			CompanyUser.find({companyID: ObjectId(request.params.id)}, function(err, result) {
 				if (err) {
 					reply({
 						status: false,
 						message: errmsg
 					})
 				} else {
+					console.log(result)
 					reply(result)
 				}
 			})
@@ -39,13 +42,12 @@ CompanyController.prototype = (function() {
 		insert: function insert(request, reply) {
 			company = request.payload
 			
-			var companySchema = new Company({
+			var companySchema = new CompanyUser({
+				companyID: ObjectId(company.companyID), 
 				img: company.img,
 				name: company.name,
-				type: company.type,
-				open: false,
-				latitude: company.latitude,
-				longitude: company.longitude
+				password: company.type,
+				permission: company.permission
 			});
 
 			companySchema.save(function(err, result) {
@@ -57,7 +59,7 @@ CompanyController.prototype = (function() {
 				} else {
 					reply({
 						status: true,
-						message: 'Empresa foi criada com sucesso.'
+						message: 'Usuário foi criado com sucesso.'
 					})
 				}
 
@@ -69,25 +71,37 @@ CompanyController.prototype = (function() {
 			company = request.payload
 			company.updated_at = new Date()
 
-			Company.findOneAndUpdate({
-				_id: company._id
+			CompanyUser.findOneAndUpdate({
+				_id: ObjectId(company._id)
 			}, company, function(err, company) {
 				if (err) {
 					reply(err)
 				} else {
 					reply({
 						status: true,
-						message: 'Empresa editada com sucesso.'
+						message: 'Usuário editado com sucesso.'
 					})
 				}
 			});
 
 		},
 		delete: function(request, reply) {
-			console.log("delete")
+			CompanyUser.remove({_id: ObjectId(request.params.id)}, function(err, address){
+				if(err){
+					reply({
+						status: false,
+						message: 'Não foi possível remover o usuário. Tente mais tarde!'
+					})	
+				}else{
+					reply({
+						status: true,
+						message: 'Usuário removido com sucesso.'
+					})
+				}
+			})
 		}
 	}
 })();
 
-var companyController = new CompanyController();
-module.exports = companyController;
+var companyUserController = new CompanyUserController();
+module.exports = companyUserController;

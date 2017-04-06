@@ -34,6 +34,7 @@ internals.implementation = function (server, options) {
 
       var req = request.raw.req;
       var authorization = req.headers.authorization;
+      
       if (!authorization) {
         return reply(Boom.unauthorized(null, 'Bearer'));
       }
@@ -55,6 +56,7 @@ internals.implementation = function (server, options) {
       var token = authorization;
 
       jwt.verify(token, settings.key, settings.verifyOptions || {}, function(err, decoded) {
+
         if(err && err.message === 'jwt expired') {
           return reply({
                         status: false, 

@@ -30,14 +30,6 @@ var validateFields = function(user){
 			}
 	}
 
-
-	var regex = /^\D?(\d{3})\D?\D?(\d{5})\D?(\d{4})$/
-	if(user.phone.match( regex ) == null){
-		return {
-				status: false,
-				message: 'Número telefonico inválido. Somente número com 11 valores ou no formato (xx) xxxxx-xxxx'
-			}
-	}
 	return {status: true}
 }
 
