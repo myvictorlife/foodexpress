@@ -23,4 +23,16 @@ module.exports = [{
             description: 'Autentica um usuário na base',
             handler: authenticateController.authenticateByFacebook
           }
+      },{
+          method: 'POST',
+          path: '/authenticate-company',
+          config: {
+            description: 'Autentica um usuário na base',
+            validate: {
+                  payload: { name: Joi.string().required(),
+                             password: Joi.string().required() 
+                            }
+              },
+            handler: authenticateController.authenticateCompany
+          }
       }];

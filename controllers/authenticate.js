@@ -4,6 +4,7 @@ const ValidateSchema = require('./validate-schema')
 var validator = require('validator');
 
 var User = require('../models/user')
+var CompanyUser = require('../models/company-user')
 var randomstring = require("randomstring")
 
 var jwt    = require('jsonwebtoken'), // used to create, sign, and verify tokens
@@ -12,6 +13,7 @@ var jwt    = require('jsonwebtoken'), // used to create, sign, and verify tokens
 var mongoose = require('mongoose');
 
 var verifyPassword = function(userPassword, password){
+
   if(userPassword === password)
     return true
   else return false
@@ -90,6 +92,7 @@ AuthenticateController.prototype = (function(){
 						} else if (user) {
 
 							console.log(crypt.decrypt(user.password))
+							console.log(verifyPassword(user.password, password))
 							if(!verifyPassword(user.password, password)){
 				              reply({'status': false, 'message':'Senha inválida'});
 				            }else{
@@ -132,6 +135,31 @@ AuthenticateController.prototype = (function(){
 				}
 			})
 		
+		},
+		authenticateCompany: function authenticateCompany(request, reply) {
+			
+			var name = request.payload.name
+			var password = request.payload.password
+
+			CompanyUser.findOne({name: name}, function(err, user) {
+
+				if (err) {
+					reply(err)
+				} else if (user) {
+					
+					password = crypt.encrypt(password)
+					if(!verifyPassword(user.password, password)){
+		              reply({'status': false, 'message':'Senha inválida'});
+		            }else{
+		              // Se não tiver nenhum erro, então criamos o Token para ele
+		              var token = jwt.sign(user, middlwareJwt.privateKey, {expiresIn: '24h'})
+                      reply({token:token, "message":"Login efetuado com sucesso", "success":true})
+		            } 
+
+				} else {
+					reply({'status': false, 'message':'Nenhum usuário encontrado'});
+				}
+			})
 		}
 	}
 })();

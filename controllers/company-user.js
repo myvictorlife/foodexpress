@@ -4,6 +4,8 @@ var ObjectId = require('mongodb').ObjectID
 const serverEndpoints = require('../config/server-endpoints')
 var CompanyUser = require('../models/company-user')
 
+const crypt = require('../config/cryptography')
+
 function CompanyUserController() {};
 CompanyUserController.prototype = (function() {
 
@@ -33,7 +35,6 @@ CompanyUserController.prototype = (function() {
 						message: errmsg
 					})
 				} else {
-					console.log(result)
 					reply(result)
 				}
 			})
@@ -42,11 +43,12 @@ CompanyUserController.prototype = (function() {
 		insert: function insert(request, reply) {
 			company = request.payload
 			
+			company.password = crypt.encrypt(company.password)
 			var companySchema = new CompanyUser({
 				companyID: ObjectId(company.companyID), 
 				img: company.img,
 				name: company.name,
-				password: company.type,
+				password: company.password,
 				permission: company.permission
 			});
 
@@ -70,6 +72,10 @@ CompanyUserController.prototype = (function() {
 
 			company = request.payload
 			company.updated_at = new Date()
+
+			if(company.password){
+				company.password = crypt.encrypt(company.password)
+			}
 
 			CompanyUser.findOneAndUpdate({
 				_id: ObjectId(company._id)

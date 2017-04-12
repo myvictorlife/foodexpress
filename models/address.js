@@ -1,7 +1,6 @@
 // grab the things we need
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema
-var relationship = require("mongoose-relationship")
 
 // create a schema
 var addressSchema = new Schema({

@@ -11,7 +11,6 @@ var SendEmail = require('../config/sendemail')
 const ValidateSchema = require('./validate-schema')
 
 var jwt    = require('jsonwebtoken'), // used to create, sign, and verify tokens
-    moment = require('moment'),
     middlwareJwt = require('../middlewares/middleware-jwt');
 
 var validateFields = function(user){

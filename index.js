@@ -13,13 +13,23 @@ const Company = require('./routes/company')
 const CompanyUser = require('./routes/company-user')
 const FoodOrder = require('./routes/food-order')
 const Relationship = require('./routes/relationship')
+const Upload = require('./routes/upload')
+const Path = require('path');
 
 const AdditionalInformationCompany = require('./routes/additional-information-company')
 
 var middlwareJwt = require('./middlewares/middleware-jwt')
 var hapiAuthJwt = require('./middlewares/jwt-verify')
 
-const config = {};
+const config = {
+   connections: {
+        routes: {
+            files: {
+                relativeTo: Path.join(__dirname, 'public')
+            }
+        }
+    }
+};
 const server = new Hapi.Server(config);
 
 //const port = 8080;
@@ -78,10 +88,25 @@ server.register([Vision, Inert, loutRegister, hapiAuthJwt], function(err) {
     server.route(AdditionalInformationCompany)
     server.route(FoodOrder)
     server.route(Relationship)
+    server.route(Upload)
     
     server.start(function () {
         console.log('Server running at:', server.info.uri);
     });
+
+    // Show image /public/upload
+    server.route({
+      method: 'GET',
+      path: '/upload/{param*}',
+      handler: {
+          directory: {
+              path: '.',
+              redirectToSlash: true,
+              index: true
+          }
+        }
+    });
+
 });
 
 module.exports = server;
