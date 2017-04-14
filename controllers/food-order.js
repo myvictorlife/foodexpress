@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 var ObjectId = require('mongodb').ObjectID
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
-
+const notification = require('./notification')
 
 const serverEndpoints = require('../config/server-endpoints')
 var FoodOrder = require('../models/food-order')
@@ -38,7 +38,7 @@ function FoodOrderController() {};
 FoodOrderController.prototype = (function() {
 
 	return {
-		findByUserId: function findByUserId(request, reply) {
+		findByCompanyId: function findByCompanyId(request, reply) {
 			var id = request.params.id
 			if (!ObjectId.isValid(id)) {
 				reply({
@@ -55,17 +55,21 @@ FoodOrderController.prototype = (function() {
 					} else {
 						var collection = db.collection('FoodOrder');
 
-						collection.find({userID: id}).sort({ created_at: -1 }).toArray(function (err, items) {
-				        if (err) {
+						collection.find({
+							companyID: id
+						}).sort({
+							created_at: -1
+						}).toArray(function(err, items) {
+							if (err) {
 								reply({
 									status: false,
 									message: 'Erro ao tentar registrar o pedido.'
 								});
-							}else{
+							} else {
 								reply(items)
 							}
 							db.close()
-				    });
+						});
 
 					}
 				});
@@ -90,28 +94,28 @@ FoodOrderController.prototype = (function() {
 						var collection = db.collection('FoodOrder');
 
 						collection.aggregate([{
-					        $match: {
-					                    companyID: id
-					                }
-					    },{
-				            $lookup: {
-				                    from: "users",
-				                    localField: "userID",
-				                    foreignField: "_id",
-				                    as: "user"
-				            }
-					    }], function(err, user) {
-					            if (err) {
-					                    reply(err)
-					            } else if (user.length > 0) {
-					                    reply(user);
-					            } else {
-					                    reply({
-					                            'status': true,
-					                            'message': 'Nenhum usuário encontrado'
-					                    });
-					            }
-					    })
+							$match: {
+								companyID: id
+							}
+						}, {
+							$lookup: {
+								from: "users",
+								localField: "userID",
+								foreignField: "_id",
+								as: "user"
+							}
+						}], function(err, user) {
+							if (err) {
+								reply(err)
+							} else if (user.length > 0) {
+								reply(user);
+							} else {
+								reply({
+									'status': true,
+									'message': 'Nenhum usuário encontrado'
+								});
+							}
+						})
 
 					}
 				});
@@ -161,6 +165,46 @@ FoodOrderController.prototype = (function() {
 
 			var foodOrder = request.payload
 
+			MongoClient.connect(serverEndpoints.URL_MONGO, function(err, db) {
+					if (err) {
+						reply({
+							status: false,
+							message: 'Unable to connect to the mongoDB server. Error:',
+							err
+						});
+					} else {
+
+						var collection = db.collection('FoodOrder');
+
+						collection.update({
+								"_id": ObjectId(foodOrder._id)
+							}, {
+								$set: {
+									'status': foodOrder.status,
+									'updated_at': new Date()
+								}
+							},
+
+							function(err, result) {
+								if (err) {
+									reply({
+										status: false,
+										message: 'Erro ao tentar registrar o pedido.'
+									});
+								} else {
+									if(foodOrder.pushUserId){
+										notification(foodOrder.pushUserId, 'Status do seu pedido: ' + foodOrder.status, foodOrder.companyImg, foodOrder.companyName);
+									}
+									reply({
+										status: true,
+										message: 'O pedido foi editado com sucesso.'
+									})
+								}
+								//Close connection
+								db.close();
+							});
+					}
+				});
 
 		},
 		delete: function(request, reply) {

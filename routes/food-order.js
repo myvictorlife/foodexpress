@@ -9,8 +9,8 @@ module.exports = [{
         method: 'POST',
         path: '/food-order',
         config: {
-            description: 'Inserindo pedido do usuário na base',
-            auth: 'token',
+            description: 'Editar pedido do usuário na base',
+            //auth: 'token',
             handler: FoodOrderControllerController.insert
         }
     },{
@@ -18,15 +18,15 @@ module.exports = [{
         path: '/food-order/{id}',
         config:{
           description: 'Buscando pedido do usuário na base por id',
-          auth: 'token'
+          //auth: 'token'
         },
-        handler: FoodOrderControllerController.findByUserId
+        handler: FoodOrderControllerController.findByCompanyId
     },{
         method: 'PUT',
         path: '/food-order',
         config: {
             description: 'Editando pedido do usuário na base',
-            auth: 'token'
+            //auth: 'token'
             },
             handler: FoodOrderControllerController.update
     },{
